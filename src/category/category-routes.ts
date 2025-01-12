@@ -4,12 +4,18 @@ import categoryValidator from "./category-validator";
 import { CategoryServices } from "./category-services";
 import logger from "../config/logger";
 import { asyncWrapper } from "../common/utils/asyncWrapper";
+import authenticate from "../common/middlewares/authenticate";
 
 const router = express.Router();
 
 const categoryService = new CategoryServices();
 const categoryController = new CategoryController(categoryService, logger);
-router.post("/", categoryValidator, asyncWrapper(categoryController.create));
+router.post(
+    "/",
+    authenticate,
+    categoryValidator,
+    asyncWrapper(categoryController.create),
+);
 
 //: We can handle "this" reference error below way ( We have seen previously in "auth service"). But in catalog service we will bind this in controller
 // router.post(
