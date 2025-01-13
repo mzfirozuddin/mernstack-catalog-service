@@ -1,6 +1,7 @@
 import express from "express";
 import { CategoryController } from "./category-controller";
 import categoryValidator from "./category-validator";
+import updateCategoryValidator from "./update-category-validator";
 import { CategoryServices } from "./category-services";
 import logger from "../config/logger";
 import { asyncWrapper } from "../common/utils/asyncWrapper";
@@ -20,6 +21,13 @@ router.post(
     asyncWrapper(categoryController.create),
 );
 
+router.patch(
+    "/:id",
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    updateCategoryValidator,
+    asyncWrapper(categoryController.update),
+);
 //: We can handle "this" reference error below way ( We have seen previously in "auth service"). But in catalog service we will bind this in controller
 // router.post(
 //     "/",
