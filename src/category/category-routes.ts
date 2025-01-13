@@ -28,6 +28,17 @@ router.patch(
     updateCategoryValidator,
     asyncWrapper(categoryController.update),
 );
+
+router.get("/", asyncWrapper(categoryController.getAll));
+router.get("/:id", asyncWrapper(categoryController.getOne));
+
+router.delete(
+    "/:id",
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    asyncWrapper(categoryController.delete),
+);
+
 //: We can handle "this" reference error below way ( We have seen previously in "auth service"). But in catalog service we will bind this in controller
 // router.post(
 //     "/",

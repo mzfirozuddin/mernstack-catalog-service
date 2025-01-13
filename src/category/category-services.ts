@@ -16,7 +16,8 @@ export class CategoryServices {
     }
 
     async getOne(categoryId: string) {
-        return await CategoryModel.findById(categoryId);
+        // return await CategoryModel.findById(categoryId);
+        return await CategoryModel.findOne({ _id: categoryId });
     }
 
     async getAll() {

@@ -12,6 +12,9 @@ export class CategoryController {
     ) {
         this.create = this.create.bind(this); //: Manually bind "this" for create method
         this.update = this.update.bind(this);
+        this.getOne = this.getOne.bind(this);
+        this.getAll = this.getAll.bind(this);
+        this.delete = this.delete.bind(this);
     }
 
     async create(req: Request, res: Response, next: NextFunction) {
@@ -68,5 +71,35 @@ export class CategoryController {
         this.logger.info(`Created updated`, { id: updatedCategory?._id });
 
         res.status(200).json({ id: updatedCategory?._id });
+    }
+
+    async getOne(req: Request, res: Response, next: NextFunction) {
+        const categoryId = req.params.id;
+        // console.log(categoryId);
+        const category = await this.categoryService.getOne(categoryId);
+        // console.log(category);
+        if (!category) {
+            return next(createHttpError(404, "Category not found"));
+        }
+
+        this.logger.info(`Getting category`, { id: category._id });
+
+        res.status(200).json(category);
+    }
+
+    async getAll(req: Request, res: Response) {
+        const categories = await this.categoryService.getAll();
+
+        this.logger.info(`Getting all category`);
+
+        res.status(200).json(categories);
+    }
+
+    async delete(req: Request, res: Response) {
+        const categoryId = req.params.id;
+        const category = await this.categoryService.delete(categoryId);
+        this.logger.info(`Category deleted`, { id: category?._id });
+
+        res.json({ id: category?._id });
     }
 }
