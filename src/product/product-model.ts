@@ -1,30 +1,36 @@
 import mongoose from "mongoose";
 
-const priceConfigurationSchema = new mongoose.Schema({
-    priceType: {
-        type: String,
-        enum: ["base", "additional"],
-    },
-    availableOptions: {
-        type: Map, //: Map means key:value pare
-        of: Number,
-    },
+const priceConfigurationSchema = new mongoose.Schema(
+    {
+        priceType: {
+            type: String,
+            enum: ["base", "additional"],
+        },
+        availableOptions: {
+            type: Map, //: Map means key:value pare
+            of: Number,
+        },
 
-    //Eg:-
-    // availableOptions: {
-    //     "small": 400,  //: Here small is string and 400 is number
-    //     "medium": 600
-    // },
-});
+        //Eg:-
+        // availableOptions: {
+        //     "small": 400,  //: Here small is string and 400 is number
+        //     "medium": 600
+        // },
+    },
+    { _id: false },
+);
 
-const attributeValueSchema = new mongoose.Schema({
-    name: {
-        type: String,
+const attributeValueSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+        },
+        value: {
+            type: mongoose.Schema.Types.Mixed,
+        },
     },
-    value: {
-        type: mongoose.Schema.Types.Mixed,
-    },
-});
+    { _id: false },
+);
 
 const productSchema = new mongoose.Schema(
     {
