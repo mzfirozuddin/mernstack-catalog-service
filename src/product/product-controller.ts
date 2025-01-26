@@ -1,8 +1,11 @@
 import { NextFunction, Response } from "express";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
+import { v4 as uuidv4 } from "uuid";
+import { UploadedFile } from "express-fileupload";
 import { ProductService } from "./product-service";
 import { ICreateProductRequest } from "./product-types";
+import { IFileStorage } from "../common/types/storage";
 
 export class ProductController {
     //:- NOTE: Here we do manual binding of this. To avoid this we can replace clasic function to an arrow function
@@ -10,7 +13,10 @@ export class ProductController {
     //     this.create = this.create.bind(this);
     // }
 
-    constructor(private productServiec: ProductService) {}
+    constructor(
+        private productServiec: ProductService,
+        private storage: IFileStorage,
+    ) {}
 
     //- Here we make this as arrow function. Now we don't need manual "this" binding
     create = async (
@@ -25,6 +31,17 @@ export class ProductController {
         if (!result.isEmpty()) {
             return next(createHttpError(400, result.array()[0].msg as string));
         }
+
+        //: Get image from req.files
+        const image = req.files!.image as UploadedFile;
+
+        //: Image Upload
+        const imageName = uuidv4(); //: Generate unique id each time
+
+        await this.storage.upload({
+            fileName: imageName,
+            fileData: image.data.buffer,
+        });
 
         //: Receive data from req.body
         const {
@@ -48,11 +65,8 @@ export class ProductController {
             tenantId,
             categoryId,
             isPublish,
-            image: "image.jpg",
+            image: imageName,
         };
-
-        // const product
-        //: TODO: Image Upload
 
         //: TODO: Save product to DB
         const newProduct = await this.productServiec.createProduct(product);
