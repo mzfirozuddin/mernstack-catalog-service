@@ -26,7 +26,7 @@ export class S3Storage implements IFileStorage {
         try {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            await this.client.send(new PutObjectCommand(objectParams));
+            return await this.client.send(new PutObjectCommand(objectParams));
         } catch (error) {
             if (error instanceof Error) {
                 throw new Error(error.message);
