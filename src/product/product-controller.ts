@@ -6,6 +6,8 @@ import { UploadedFile } from "express-fileupload";
 import { ProductService } from "./product-service";
 import { ICreateProductRequest } from "./product-types";
 import { IFileStorage } from "../common/types/storage";
+import { AuthRequest } from "../common/types";
+import { Roles } from "../common/constants";
 
 export class ProductController {
     //:- NOTE: Here we do manual binding of this. To avoid this we can replace clasic function to an arrow function
@@ -90,9 +92,28 @@ export class ProductController {
         const { productId } = req.params;
 
         //: Check product is present or not
-        const oldImage = await this.productServiec.getProductImage(productId);
-        if (!oldImage) {
+        const existingProduct = await this.productServiec.getProduct(productId);
+        if (!existingProduct) {
             return next(createHttpError(404, "Product is not found!"));
+        }
+
+        //: Check current tenant manager has access to update product
+        if ((req as AuthRequest).auth.role !== Roles.ADMIN) {
+            const tenant = (req as AuthRequest).auth.tenant;
+            // console.log("Tenant Id: ", tenant);
+            if (existingProduct.tenantId !== tenant) {
+                return next(
+                    createHttpError(
+                        "403",
+                        "Forbidden: You are not allowed to access this product!",
+                    ),
+                );
+            }
+        }
+
+        let oldImage: string | undefined;
+        if (existingProduct.image) {
+            oldImage = existingProduct.image;
         }
 
         //: Check file is sent by user while doing update
@@ -106,7 +127,7 @@ export class ProductController {
                 fileData: image.data.buffer,
             });
 
-            await this.storage.delete(oldImage);
+            await this.storage.delete(oldImage as string);
         }
 
         //: get product data from req.body
@@ -121,7 +142,7 @@ export class ProductController {
         } = req.body;
 
         //: prepare product object
-        const product = {
+        const productToUpdate = {
             name,
             description,
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-unsafe-assignment
@@ -137,7 +158,7 @@ export class ProductController {
         //: update product in DB
         const updatedProduct = await this.productServiec.updateProduct(
             productId,
-            product,
+            productToUpdate,
         );
 
         //: return response

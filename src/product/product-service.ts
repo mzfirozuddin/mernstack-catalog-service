@@ -6,9 +6,8 @@ export class ProductService {
         return await ProductModel.create(product);
     }
 
-    async getProductImage(productId: string) {
-        const product = await ProductModel.findById(productId);
-        return product?.image;
+    async getProduct(productId: string): Promise<IProduct | null> {
+        return await ProductModel.findById(productId);
     }
 
     async updateProduct(productId: string, product: IProduct) {
