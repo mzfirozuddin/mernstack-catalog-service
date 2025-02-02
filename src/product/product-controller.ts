@@ -76,6 +76,10 @@ export class ProductController {
         //: Save product to DB
         const newProduct = await this.productServiec.createProduct(product);
 
+        this.logger.info("Product created successfully.", {
+            id: newProduct?._id,
+        });
+
         //: Return response
         res.status(201).json({ id: newProduct._id });
     };
@@ -163,6 +167,10 @@ export class ProductController {
             productId,
             productToUpdate,
         );
+
+        this.logger.info("Product updated successfully.", {
+            id: updatedProduct?._id,
+        });
 
         //: return response
         res.status(200).json({ id: updatedProduct?._id });
