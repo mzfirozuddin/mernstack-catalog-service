@@ -2,6 +2,7 @@ import { Request } from "express-jwt";
 import mongoose from "mongoose";
 
 export interface IProduct {
+    _id?: mongoose.Types.ObjectId;
     name: string;
     description: string;
     image?: string;
@@ -20,6 +21,11 @@ export interface IFilter {
     tenantId?: string;
     categoryId?: mongoose.Types.ObjectId; //: This is used to create or manipulate ObjectId instances.
     isPublish?: boolean;
+}
+
+export interface IPaginateQuery {
+    page: number;
+    limit: number;
 }
 
 //-===================================================================

@@ -177,7 +177,7 @@ export class ProductController {
     };
 
     listAll = async (req: Request, res: Response) => {
-        const { q, tenantId, categoryId, isPublish } = req.query;
+        const { q, tenantId, categoryId, isPublish, page, limit } = req.query;
 
         //: Taking a empty filter object
         const filters: IFilter = {};
@@ -202,9 +202,17 @@ export class ProductController {
             );
         }
 
+        //: Making paginate query
+        const paginateQuery = {
+            page: page ? parseInt(page as string) : 1,
+            limit: limit ? parseInt(limit as string) : 10,
+        };
+        // console.log("paginateQuery: ", paginateQuery);
+
         const products = await this.productServiec.getProducts(
             q as string,
             filters,
+            paginateQuery,
         );
         // console.log("Products: ", products);
         this.logger.info("Getting product list successfully.");

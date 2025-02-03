@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const priceConfigurationSchema = new mongoose.Schema(
     {
@@ -67,4 +68,6 @@ const productSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
+//: Register plugin
+productSchema.plugin(aggregatePaginate);
 export default mongoose.model("Product", productSchema);
