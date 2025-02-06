@@ -4,7 +4,7 @@ import createHttpError from "http-errors";
 import { v4 as uuidv4 } from "uuid";
 import { UploadedFile } from "express-fileupload";
 import { ProductService } from "./product-service";
-import { ICreateProductRequest, IFilter } from "./product-types";
+import { ICreateProductRequest, IFilter, IProduct } from "./product-types";
 import { IFileStorage } from "../common/types/storage";
 import { AuthRequest } from "../common/types";
 import { Roles } from "../common/constants";
@@ -217,6 +217,20 @@ export class ProductController {
         // console.log("Products: ", products);
         this.logger.info("Getting product list successfully.");
 
-        res.status(200).json(products);
+        const finalProducts = (products.data as IProduct[]).map(
+            (product: IProduct) => {
+                return {
+                    ...product,
+                    image: this.storage.getObjectUri(product.image as string),
+                };
+            },
+        );
+
+        res.status(200).json({
+            data: finalProducts,
+            total: products.total,
+            pageSize: products.limit,
+            currentPage: products.page,
+        });
     };
 }

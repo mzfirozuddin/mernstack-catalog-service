@@ -5,6 +5,7 @@ import {
 } from "@aws-sdk/client-s3";
 import config from "config";
 import { IFileData, IFileStorage } from "../types/storage";
+import createHttpError from "http-errors";
 
 export class S3Storage implements IFileStorage {
     private client: S3Client;
@@ -51,8 +52,17 @@ export class S3Storage implements IFileStorage {
         return await this.client.send(new DeleteObjectCommand(objectParams));
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getObjectUri(fileName: string): string {
-        throw new Error("Method not implemented.");
+        //: https://mernstack-pizza-app-project.s3.ap-south-1.amazonaws.com/2694953d-728a-4349-b19a-124d4a9ae716
+        const bucket = config.get("s3.bucket");
+        const region = config.get("s3.region");
+
+        //: Narrowing down
+        if (typeof bucket === "string" && typeof region === "string") {
+            return `https://${bucket}.s3.${region}.amazonaws.com/${fileName}`;
+        }
+
+        const error = createHttpError(500, "Invalid s3 configuration!");
+        throw error;
     }
 }
