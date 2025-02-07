@@ -233,4 +233,25 @@ export class ProductController {
             currentPage: products.page,
         });
     };
+
+    getSingle = async (req: Request, res: Response, next: NextFunction) => {
+        //: get product id from req.params
+        const { productId } = req.params;
+
+        //: Check product is present or not
+        const product = await this.productServiec.getProduct(productId);
+        if (!product) {
+            return next(createHttpError(404, "Product is not found!"));
+        }
+
+        //: get image uri for this product
+        const productImageUri = this.storage.getObjectUri(
+            product.image as string,
+        );
+
+        //: Replace image uri with image name
+        product.image = productImageUri;
+
+        res.status(200).json(product);
+    };
 }

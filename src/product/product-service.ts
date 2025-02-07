@@ -8,7 +8,7 @@ export class ProductService {
     }
 
     async getProduct(productId: string): Promise<IProduct | null> {
-        return await ProductModel.findById(productId);
+        return await ProductModel.findById(productId).populate("categoryId"); //: 1st parameter should be foreign key
     }
 
     async updateProduct(productId: string, product: IProduct) {
