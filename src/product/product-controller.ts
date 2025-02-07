@@ -244,6 +244,8 @@ export class ProductController {
             return next(createHttpError(404, "Product is not found!"));
         }
 
+        this.logger.info("Getting single product successfully.");
+
         //: get image uri for this product
         const productImageUri = this.storage.getObjectUri(
             product.image as string,
@@ -253,5 +255,22 @@ export class ProductController {
         product.image = productImageUri;
 
         res.status(200).json(product);
+    };
+
+    delete = async (req: Request, res: Response) => {
+        //: get product id from req.params
+        const { productId } = req.params;
+
+        //: delete product from db
+        const product = await this.productServiec.deleteProduct(productId);
+        // console.log(product);
+
+        //: Delete product image from s3
+        await this.storage.delete(product?.image as string);
+
+        res.status(200).json({
+            msg: "Product deleted successfully.",
+            id: product?._id,
+        });
     };
 }
