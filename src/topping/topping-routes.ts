@@ -56,6 +56,11 @@ router.put(
 
 router.get("/", asyncWrapper(toppingController.listAll));
 router.get("/:toppingId", asyncWrapper(toppingController.getSingle));
-router.delete("/:toppingId", asyncWrapper(toppingController.delete));
+router.delete(
+    "/:toppingId",
+    authenticate,
+    canAccess([Roles.ADMIN, Roles.MANAGER]),
+    asyncWrapper(toppingController.delete),
+);
 
 export default router;
