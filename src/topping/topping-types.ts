@@ -7,6 +7,8 @@ export interface ITopping {
     image?: string;
     price: number;
     tenantId: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface ICreateToppingRequest extends Request {

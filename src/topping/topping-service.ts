@@ -19,4 +19,8 @@ export class ToppingService {
             { new: true },
         );
     }
+
+    async getToppings() {
+        return await ToppingModel.find().lean(); //: lean() -> Converts documents into plain JS objects
+    }
 }

@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Logger } from "winston";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
@@ -6,7 +6,7 @@ import { UploadedFile } from "express-fileupload";
 import { v4 as uuidv4 } from "uuid";
 import { ToppingService } from "./topping-service";
 import { IFileStorage } from "../common/types/storage";
-import { ICreateToppingRequest } from "./topping-types";
+import { ICreateToppingRequest, ITopping } from "./topping-types";
 import { AuthRequest } from "../common/types";
 import { Roles } from "../common/constants";
 
@@ -138,7 +138,36 @@ export class ToppingController {
         res.status(200).json({ id: updatedTopping?._id });
     };
 
-    // listAll = async (req: Request, res: Response, next: NextFunction) => {};
+    listAll = async (req: Request, res: Response) => {
+        const toppings = await this.toppingService.getToppings();
+
+        //: Secondary Option
+        // const finalToppings = (toppings as ITopping[]).map(
+        //     (topping: ITopping) => {
+        //         return {
+        //             _id: topping._id,
+        //             name: topping.name,
+        //             price: topping.price,
+        //             tenantId: topping.tenantId,
+        //             image: this.storage.getObjectUri(topping.image as string),
+        //             createdAt: topping.createdAt,
+        //             updatedAt: topping.updatedAt,
+        //         };
+        //     },
+        // );
+
+        const finalToppings = toppings.map((topping: ITopping) => {
+            return {
+                ...topping,
+                image: this.storage.getObjectUri(topping.image as string),
+            };
+        });
+
+        this.logger.info("Getting topping list successfully.");
+
+        res.status(200).json(finalToppings);
+    };
+
     // getSingle = async (req: Request, res: Response, next: NextFunction) => {};
     // delete = async (req: Request, res: Response, next: NextFunction) => {};
 }
