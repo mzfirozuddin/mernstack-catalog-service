@@ -180,5 +180,19 @@ export class ToppingController {
 
         res.status(200).json(topping);
     };
-    // delete = async (req: Request, res: Response, next: NextFunction) => {};
+
+    delete = async (req: Request, res: Response) => {
+        const { toppingId } = req.params;
+
+        const deletedTopping =
+            await this.toppingService.deleteTopping(toppingId);
+
+        //: Delete topping image from s3
+        await this.storage.delete(deletedTopping?.image as string);
+
+        res.status(200).json({
+            id: deletedTopping?._id,
+            msg: "Topping deleted successfully.",
+        });
+    };
 }

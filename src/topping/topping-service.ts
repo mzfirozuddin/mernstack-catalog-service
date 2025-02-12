@@ -23,4 +23,8 @@ export class ToppingService {
     async getToppings() {
         return await ToppingModel.find().lean(); //: lean() -> Converts documents into plain JS objects
     }
+
+    async deleteTopping(toppingId: string) {
+        return await ToppingModel.findByIdAndDelete(toppingId);
+    }
 }
