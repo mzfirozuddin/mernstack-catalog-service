@@ -78,7 +78,7 @@ export class ToppingController {
         //: Check product is present or not
         const existingTopping = await this.toppingService.getTopping(toppingId);
         if (!existingTopping) {
-            return next(createHttpError(404, "Product is not found!"));
+            return next(createHttpError(404, "Topping is not found!"));
         }
 
         //: Check current tenant manager has access to update product
@@ -168,6 +168,17 @@ export class ToppingController {
         res.status(200).json(finalToppings);
     };
 
-    // getSingle = async (req: Request, res: Response, next: NextFunction) => {};
+    getSingle = async (req: Request, res: Response, next: NextFunction) => {
+        const { toppingId } = req.params;
+        const topping = await this.toppingService.getTopping(toppingId);
+
+        if (!topping) {
+            return next(createHttpError(404, "Topping is not found!"));
+        }
+
+        topping.image = this.storage.getObjectUri(topping.image as string);
+
+        res.status(200).json(topping);
+    };
     // delete = async (req: Request, res: Response, next: NextFunction) => {};
 }
